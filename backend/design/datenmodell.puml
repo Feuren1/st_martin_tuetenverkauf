@@ -1,0 +1,107 @@
+@startuml Tuetenverkauf_Datenmodell
+title St.Martin Tütenverkauf – Datenmodell
+
+skinparam nodesep 40
+skinparam ranksep 180
+skinparam shadowing false
+
+skinparam linetype ortho
+
+package "Core Domain Models" {
+    class User {
+        + id : PK (Long)
+        + email : String <<unique>>
+        + passwordHash : String
+        + vorname : String
+        + nachname : String
+        + emailVerifiedAt : Timestamp <<nullable>>
+        + createdAt : Timestamp
+    }
+
+    class Role {
+        + id : PK (Long)
+        + userId : FK (Long)
+        + role : UserRole
+    }
+
+
+    class Order {
+        + id : PK (Long)
+        + orderNumber : String <<unique>>
+        + userId : FK (Long)
+        + totalAmountCents : Integer
+        + status : OrderStatus
+        + paidAt : Timestamp <<nullable>>
+        + paidVia : PaymentMethod <<nullable>>
+        + confirmedByAdminId : FK (Long) <<nullable>>
+        + pickedUpAt : Timestamp <<nullable>>
+        + pickedUpByAdminId : FK (Long) <<nullable>>
+        + qrNonce : String
+        + createdAt : Timestamp
+    }
+
+    class Item{
+        + id : PK (Long)
+        + name : String
+        + unitPriceCents : Integer
+    }
+
+    class OrderItem {
+        + id : PK (Long)
+        + itemId : FK (Long)
+        + quantity : Integer
+        + unitPriceCents : Integer
+        }
+
+    class PaymentMatch {
+        + id : PK (Long)
+        + orderId : FK (Long) <<nullable>>
+        + amountCents : Integer
+        + referenceText : String
+        + senderName : String
+        + bookedAt : Date
+        + matchStatus : MatchStatus
+        + resolvedByAdminId : FK (Long) <<nullable>>
+    }
+}
+
+package "Enums" {
+    enum UserRole {
+        KAEUFER
+        VEREINSMITGLIED
+        VEREINSMITGLIED_ADMIN
+        ADMIN
+    }
+
+    enum OrderStatus {
+        AUSSTEHEND
+        BEZAHLT
+        ABGEHOLT
+        STORNIERT
+    }
+
+    enum PaymentMethod {
+        FINTS_AUTO
+        MANUAL
+    }
+
+    enum MatchStatus {
+        AUTO_MATCHED
+        MANUAL_MATCHED
+        UNMATCHED
+        AMBIGUOUS
+    }
+}
+
+User "1" --> "0..*" Order : "gibt auf (userId)"
+User "1" --> "0..*" Order : "bestätigt (confirmedByAdminId)"
+User "1" --> "0..*" Order : "gibt aus (pickedUpByAdminId)"
+User "0..*" --> "1..*" Role
+
+Order "1" --> "1..*" OrderItem
+OrderItem "0..*" --> "1" Item
+
+Order "1" <-- "0..*" PaymentMatch : "zugeordnet (orderId)"
+
+
+@enduml
