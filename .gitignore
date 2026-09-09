@@ -4,6 +4,7 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+secrets/
 .env
 .env.*
 !.env.example
