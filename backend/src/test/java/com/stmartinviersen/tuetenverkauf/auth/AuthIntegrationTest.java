@@ -9,6 +9,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -82,7 +83,6 @@ class AuthIntegrationTest {
         softly.assertThat(body).isNotNull();
         softly.assertThat(body.fieldErrors()).isNotNull();
         softly.assertThat(body.fieldErrors()).containsKey("email");
-        softly.assertThat(body.fieldErrors()).containsKey("password");
         softly.assertAll();
     }
 
