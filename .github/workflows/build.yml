@@ -60,6 +60,9 @@ jobs:
       contents: read
       packages: read
 
+    env:
+      COMPOSE_FILE: docker-compose.prod.yml
+
     defaults:
       run:
         working-directory: backend/docker
@@ -79,7 +82,7 @@ jobs:
         run: |
           mkdir -p secrets
           printf '%s' 'testpassword' > secrets/DB_PASSWORD
-          printf '%s' 'testsecret-at-least-32-chars-long-xx' > secrets/JWT_SECRET
+          printf '%s' 'jG5p/CohZPbAo+/84x8XR8nz8wf3NuPqfQGPbf7PiP4rrftsMmQCyH34v06/Y8Hs' > secrets/JWT_SECRET
 
       # Requires a healthcheck on the backend service, otherwise --wait
       # only waits for postgres and the job goes green on a crash-looping app.

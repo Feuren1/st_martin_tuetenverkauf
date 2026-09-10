@@ -41,6 +41,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth ->
                         auth
                                 .requestMatchers("/auth/register","/auth/login").permitAll()
+                                .requestMatchers("/actuator/health/**").permitAll()
                                 .anyRequest().denyAll())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
