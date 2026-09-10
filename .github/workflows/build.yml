@@ -60,6 +60,9 @@ jobs:
       contents: read
       packages: read
 
+    env:
+      COMPOSE_FILE: docker-compose.prod.yml
+
     defaults:
       run:
         working-directory: backend/docker
