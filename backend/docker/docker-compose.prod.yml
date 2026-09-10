@@ -1,0 +1,56 @@
+services:
+  postgres:
+    image: postgres:16
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: vereinsverwaltung
+      POSTGRES_USER: stmartin
+      POSTGRES_PASSWORD_FILE: /run/secrets/DB_PASSWORD
+
+    secrets:
+      - DB_PASSWORD
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  backend:
+    image: ghcr.io/feuren1/tuetenverkauf:${IMAGE_TAG:-latest}
+    restart: unless-stopped
+
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DB_URL: jdbc:postgresql://postgres:5432/vereinsverwaltung
+      DB_USERNAME: stmartin
+
+    secrets:
+      - DB_PASSWORD
+      - JWT_SECRET
+
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -fsS http://localhost:8080/actuator/health | grep -q '\"status\":\"UP\"'" ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+secrets:
+  DB_PASSWORD:
+    file: ./secrets/DB_PASSWORD
+
+  JWT_SECRET:
+    file: ./secrets/JWT_SECRET
+
+volumes:
+  postgres_data:
