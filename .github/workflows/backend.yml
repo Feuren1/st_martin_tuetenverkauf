@@ -88,6 +88,7 @@ jobs:
       # only waits for postgres and the job goes green on a crash-looping app.
       - name: Start stack and wait for health
         env:
+          BACKEND_IMAGE_TAG: ${{ github.sha }}
           IMAGE_TAG: ${{ github.sha }}
         run: docker compose up -d --wait --wait-timeout 180
 
