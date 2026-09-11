@@ -121,4 +121,4 @@ jobs:
           ssh -i ~/.ssh/deploy_key \
             -o IdentitiesOnly=yes \
             "$DEPLOY_USER@$DEPLOY_HOST" \
-            "sudo env BACKEND_IMAGE_TAG='$BACKEND_IMAGE_TAG' /usr/local/sbin/stmartin-deploy-backend"
+            "sudo /usr/local/sbin/stmartin-deploy-backend '$BACKEND_IMAGE_TAG'"
