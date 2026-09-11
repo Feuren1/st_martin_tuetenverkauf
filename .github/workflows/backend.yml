@@ -98,3 +98,26 @@ jobs:
       - name: Tear down
         if: always()
         run: docker compose down -v
+
+  deploy:
+    needs: smoke-test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy backend
+        env:
+          DEPLOY_KEY: ${{ secrets.ST_MARTIN_DEPLOY_KEY }}
+          DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ vars.DEPLOY_USER }}
+          BACKEND_IMAGE_TAG: ${{ github.sha }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+
+          ssh-keyscan -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts
+
+          ssh -i ~/.ssh/deploy_key \
+            -o IdentitiesOnly=yes \
+            "$DEPLOY_USER@$DEPLOY_HOST" \
+            "sudo env BACKEND_IMAGE_TAG='$BACKEND_IMAGE_TAG' /usr/local/sbin/stmartin-deploy-backend"

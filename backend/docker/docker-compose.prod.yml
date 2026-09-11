@@ -24,7 +24,7 @@ services:
       start_period: 30s
 
   backend:
-    image: ghcr.io/feuren1/tuetenverkauf:${IMAGE_TAG:-latest}
+    image: ghcr.io/feuren1/tuetenverkauf:${BACKEND_IMAGE_TAG}
     restart: unless-stopped
 
     environment:
