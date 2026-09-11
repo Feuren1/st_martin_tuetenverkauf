@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   build:
@@ -48,3 +49,26 @@ jobs:
           tags: |
             ghcr.io/${{ steps.prep.outputs.owner }}/tuetenverkauf-frontend:latest
             ghcr.io/${{ steps.prep.outputs.owner }}/tuetenverkauf-frontend:${{ github.sha }}
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy frontend
+        env:
+          DEPLOY_KEY: ${{ secrets.ST_MARTIN_DEPLOY_KEY }}
+          DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ vars.DEPLOY_USER }}
+          FRONTEND_IMAGE_TAG: ${{ github.sha }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+
+          ssh-keyscan -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts
+
+          ssh -i ~/.ssh/deploy_key \
+            -o IdentitiesOnly=yes \
+            "$DEPLOY_USER@$DEPLOY_HOST" \
+            "sudo /usr/local/sbin/stmartin-deploy-frontend '$FRONTEND_IMAGE_TAG'"
