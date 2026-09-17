@@ -86,11 +86,13 @@ jobs:
 
       # Requires a healthcheck on the backend service, otherwise --wait
       # only waits for postgres and the job goes green on a crash-looping app.
+      # Only start `backend` (which pulls in `postgres` via depends_on) so this
+      # job never needs the frontend image/tag - it doesn't test the frontend.
       - name: Start stack and wait for health
         env:
           BACKEND_IMAGE_TAG: ${{ github.sha }}
           IMAGE_TAG: ${{ github.sha }}
-        run: docker compose up -d --wait --wait-timeout 180
+        run: docker compose up -d --wait --wait-timeout 180 backend
 
       - name: Dump logs on failure
         if: failure()
