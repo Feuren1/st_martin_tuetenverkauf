@@ -3,7 +3,9 @@ spring:
     name: tuetenverkauf
   jpa:
     open-in-view: false
-
+server:
+  servlet:
+    context-path: /api
 management:
   endpoints:
     web:

@@ -94,6 +94,7 @@ public class AuthService {
     @Transactional(readOnly = true)
     public String login(LoginRequest loginRequest) {
         String email = normalizeEmail(loginRequest.email());
+        System.out.println("LOGIN EMAIL: " + email);
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new BadCredentialsException("Invalid credentials"));
 
