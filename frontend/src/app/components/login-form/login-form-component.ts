@@ -4,6 +4,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { AuthService } from '../../services/authService';
+import { LoginRequest } from '../../model/auth';
 
 @Component({
   imports: [ReactiveFormsModule, MatButtonModule, MatCardModule, MatFormFieldModule, MatInputModule],
@@ -14,9 +16,9 @@ import { MatInputModule } from '@angular/material/input';
 })
 export class LoginForm {
   private readonly formBuilder = inject(FormBuilder);
-
-  protected readonly form = this.formBuilder.group({
-    username: ['', Validators.required],
+  private authService = inject(AuthService)
+  protected readonly form = this.formBuilder.nonNullable.group({
+    email: ['', Validators.required],
     password: ['', Validators.required],
   });
 
@@ -25,5 +27,19 @@ export class LoginForm {
       this.form.markAllAsTouched();
       return;
     }
+
+    const req: LoginRequest = {
+      email: this.form.controls.email.value,
+      password: this.form.controls.password.value,
+    };
+
+    this.authService.login(req).subscribe({
+      next: () => {
+        console.log('Login!');
+      },
+      error: (error) => {
+        console.error('Login! failed', error);
+      },
+    })
   }
 }

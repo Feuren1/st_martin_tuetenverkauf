@@ -7,6 +7,10 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: update
-
+logging:
+  level:
+    org.springframework.web: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.web.cors: DEBUG
 jwt:
   secret: ${JWT_SECRET:jG5p/CohZPbAo+/84x8XR8nz8wf3NuPqfQGPbf7PiP4rrftsMmQCyH34v06/Y8Hs}
