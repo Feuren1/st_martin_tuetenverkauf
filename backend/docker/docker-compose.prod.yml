@@ -27,9 +27,6 @@ services:
     image: ghcr.io/feuren1/tuetenverkauf:${BACKEND_IMAGE_TAG}
     restart: unless-stopped
 
-    ports:
-      - "127.0.0.1:8080:8080"
-
     environment:
       SPRING_PROFILES_ACTIVE: prod
       DB_URL: jdbc:postgresql://postgres:5432/vereinsverwaltung
@@ -40,7 +37,7 @@ services:
       - JWT_SECRET
 
     healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://localhost:8080/actuator/health | grep -q '\"status\":\"UP\"'"]
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8080/api/actuator/health | grep -q '\"status\":\"UP\"'"]
       interval: 15s
       timeout: 5s
       retries: 5
@@ -49,19 +46,6 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-
-  frontend:
-    image: ghcr.io/feuren1/tuetenverkauf-frontend:${FRONTEND_IMAGE_TAG}
-    restart: unless-stopped
-
-    ports:
-      - "127.0.0.1:3000:80"
-    healthcheck:
-      test: ["CMD-SHELL", "wget --spider -q http://127.0.0.1:80/"]
-      interval: 15s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
 
 secrets:
   DB_PASSWORD:
